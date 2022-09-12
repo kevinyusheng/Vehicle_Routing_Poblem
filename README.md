@@ -22,7 +22,7 @@ __Right__: VRP with 20 cities + load 30
 
 <p align="center">
   <img src="./DRL_VRP/vrp_samples/batch0_5.5495.png" width="300"/>
-  <img src="./docs/vrp20.png" width="300"/>
+  <img src="./DRL_VRP/vrp_samples/batch0_7.1459.png" width="300"/>
 </p>
 
 
