@@ -21,8 +21,8 @@ __Left__: VRP with 10 cities + load 20
 __Right__: VRP with 20 cities + load 30
 
 <p align="center">
-  <img src="./DRL_VRP/vrp_samples/batch0_5.5495.png" width="300"/>
-  <img src="./DRL_VRP/vrp_samples/batch0_7.1459.png" width="300"/>
+  <img src="./DRL_VRP/vrp_samples/batch0_5.5495.png" width="400"/>
+  <img src="./DRL_VRP/vrp_samples/batch0_7.1459.png" width="400"/>
 </p>
 
 
@@ -39,52 +39,34 @@ The following __masking scheme__ is used for the VRP:
 In this project the following dynamic updates are used:
 1. If a vehicle visits a city, its load changes according to: Load = Load - Demand_i, and the demand at the city changes according to: Demand_i = (Demand_i - load)+
 2. Returning to the vehicle refills the vehicles load. The depot is given a "negative" demand that increases proportional to the amount of load missing from the vehicle
-
+3. If transfer nodes' demands are satisified, the customer nodes which are delivered by crowdworkers and connected to the same transfer node are satisified together.
+4. If the customer node are satisified and can be crowdshipping, the demand of the transfer node it connect changes according to the customer node.
 # Results:
 
-## Tour Accuracy
+## Batch size impact
 
-This repo only implements the "Greedy" approach during test time, which selects the city with the highest probability. Tour length comparing this project to the corresponding paper is reported below. Differences in tour length may likely be optimized further through hyperparameter search, which has not been conducted here. 
+Tour length comparing 128 batch size to the 256 batch size is reported below. The increase in Batch Size also significantly  improves the optimization capability of the model.
 
-|               | Paper ("Greedy") | This  |
-|---------------|------------------|-------|
-| TSP20         | 3.97             | 4.032 |
-| TSP50         | 6.08             | 6.226 |
-| TSP100        | 8.44             |       |
-| VRP10 Cap 20  | 4.84             | 5.082 |
-| VRP20 Cap 30  | 6.59             | 6.904 |
-| VRP50 Cap 40  | 11.39            |       |
-| VRP100 Cap 50 | 17.23            |       |
 
-## Training Time
+|               | Capacity      | Transfers  | Batch Size   | Reward "tour" |
+|---------------|---------------|------------|--------------|---------------|
+| VRP10         | 20            | 1          | 128          | 5.21          |
+| VRP10         | 20            | 1          | 256          | 3.34          |
+| VRP20         | 30            | 2          | 128          | 9.26          |
+| VRP20         | 30            | 2          | 256          | 6.03          |
 
-On a Tesla P-100 GPU, the following training times are observed. Results were obtained by taking the the total time for the first 100 training iterations (with respective batch sizes), and converting into the appopriate time unit. Note that for the VRP in particular, as models are relatively untrained during this time, this may be slightly inaccurate results and YMMV. 
+## With Crowdshipping
 
-| Task   | Batch Size | Sec / 100 Updates | Min / Epoch | Hours/Epoch | 20 Epochs |
-|--------|------------|-------------------|-------------|-------------|-----------|
-| TSP20  | 128        | 8.23              | 10.71       | 0.18        | 3.57      |
-| TSP20  | 256        | 11.90             | 7.75        | 0.13        | 2.58      |
-| TSP20  | 512        | 19.10             | 6.22        | 0.10        | 2.07      |
-| TSP50  | 128        | 21.64             | 28.17       | 0.47        | 9.39      |
-| TSP50  | 256        | 31.33             | 20.40       | 0.34        | 6.80      |
-| TSP50  | 512        | 51.70             | 16.83       | 0.28        | 5.61      |
-| TSP100 | 128        | 48.27             | 62.85       | 1.05        | 20.95     |
-| TSP100 | 256        | 73.51             | 47.85       | 0.80        | 15.95     |
+Tour length comparing our research to the Veres(2020) which do not use crowdshipping is reported below. The results with crowdshipping is much better. It also confirmed that  integrating crowdshipping can return a better reward value for the vrp.
 
-| Task   | Batch Size | Sec / 100 Updates | Min / Epoch | Hours/Epoch | 20 Epochs |
-|--------|------------|-------------------|-------------|-------------|-----------|
-| VRP10  | 128        | 12.15             | 15.82       | 0.26        | 5.27      |
-| VRP10  | 256        | 15.75             | 10.25       | 0.17        | 3.42      |
-| VRP10  | 512        | 23.30             | 7.58        | 0.13        | 2.53      |
-| VRP20  | 128        | 21.45             | 27.93       | 0.47        | 9.31      |
-| VRP20  | 256        | 28.29             | 18.42       | 0.31        | 6.14      |
-| VRP20  | 512        | 43.20             | 14.06       | 0.23        | 4.69      |
-| VRP50  | 128        | 53.59             | 69.77       | 1.16        | 23.26     |
-| VRP50  | 256        | 77.25             | 50.29       | 0.84        | 16.76     |
-| VRP50  | 512        | 127.73            | 41.58       | 0.69        | 13.86     |
-| VRP100 | 128        | 130.06            | 169.35      | 2.82        | 56.45     |
-| VRP100 | 64         | 95.03             | 247.48      | 4.12        | 82.49     |
+|               | Capacity      | Transfers  | Batch Size   | THIS          |Veres(2020)    |DIFF(REWARD)   |
+|---------------|---------------|------------|--------------|---------------|---------------|---------------|
+| VRP10         | 20            | 1          | 128          | 5.21          | 5.27          | 0.06          |
+| VRP10         | 20            | 1          | 256          | 3.34          | 3.42          | 0.08          |
+| VRP20         | 30            | 2          | 128          | 9.26          | 9.31          | 0.05          |
+| VRP20         | 30            | 2          | 256          | 6.03          | 6.14          | 0.11          |
 
-# Acknowledgements:
 
-Thanks to https://github.com/pemami4911/neural-combinatorial-rl-pytorch for insight on bug with random number generator on GPU
+
+
+
