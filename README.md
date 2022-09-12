@@ -2,43 +2,19 @@
 
 Implementation of: Nazari, Mohammadreza, et al. "Deep Reinforcement Learning for Solving the Vehicle Routing Problem." arXiv preprint arXiv:1802.04240 (2018).
 
-Currently, Traveling Salesman Problems and Vehicle Routing Problems are supported. See the _tasks/_ folder for details.
-
 ## Requirements:
 
 * Python 3.6
 * pytorch=0.4.1
 * matplotlib
 
-# To Run
-
-Run by calling ```python trainer.py```
-
-Tasks and complexity can be changed through the "task" and "nodes" flag:
-
-```python trainer.py --task=vrp --nodes=10```
-
-To restore a checkpoint, you must specify the path to a folder that has "actor.pt" and "critic.pt" checkpoints. Sample weights can be found [here](https://drive.google.com/open?id=1wxccGStVglspW-qIpUeMPXAGHh2HsFpF)
-
-```python trainer.py --task=vrp --nodes=10 --checkpoint=vrp10```
 ## Differences from paper:
 
 * Uses a GRU instead of LSTM for the decoder network
 * Critic takes the raw static and dynamic input states and predicts a reward
 * Use demand scaling (MAX_DEMAND / MAX_VEHICLE_CAPACITY), and give the depot for the VRP a negative value proportionate to the missing capacity (Unsure if used or not)
 
-## TSP Sample Tours:
-
-__Left__: TSP with 20 cities 
-
-__Right__: TSP with 50 cities
-
-<p align="center">
-  <img src="./docs/tsp20.png" width="300"/>
-  <img src="./docs/tsp50.png" width="300"/>
-</p>
-
-## VRP Sample Tours:
+## Crowdshipping VRP Sample Tours:
 
 __Left__: VRP with 10 cities + load 20 
 
@@ -49,13 +25,6 @@ __Right__: VRP with 20 cities + load 30
   <img src="./docs/vrp20.png" width="300"/>
 </p>
 
-
-
-
-# TSP
-
-The following masking scheme is used for the TSP:
-1. If a salesman has visited a city, it is not allowed to re-visit it. 
 
 # VRP
 
